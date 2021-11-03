@@ -26,7 +26,7 @@ export default class App {
     document.addEventListener('click', this.openDoors.bind(this))
   }
   openDoors() {
-    const trapdoor =this.world.room.room.children[0].children[4].children[2];
+    const trapdoor =this.world.room.room.children[0].children[3].children[2];
     const door = this.world.room.room.children[0].children[2].rotation
     const door2 = this.world.room.room.children[0].children[0].rotation
     const camera = this.camera.camera
@@ -45,8 +45,15 @@ export default class App {
       .then(
         gsap.to(camera.position, {
           x: 20,
+          y:10,
           delay: 0.5,
           duration: 2.8,
+          ease: Power3,
+        }),
+        gsap.to(trapdoor.position, {
+          x: 0,
+          delay: 1.5,
+          duration: 1,
           ease: Power3,
         })
       )
