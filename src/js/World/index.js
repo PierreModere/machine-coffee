@@ -3,6 +3,8 @@ import { AxesHelper, Object3D } from 'three'
 import AmbientLightSource from './AmbientLight'
 import PointLightSource from './PointLight'
 import Room from './Room'
+import Machine from './Machine'
+import Coffee from './Coffee'
 
 export default class World {
   constructor(options) {
@@ -27,8 +29,10 @@ export default class World {
   }
   init() {
     this.setAmbientLight()
+    // this.setPointLight()
     this.setRoom()
-  
+    this.setMachine()
+    this.setCoffee()
   }
   setLoader() {
     this.loadDiv = document.querySelector('.loadScreen')
@@ -75,5 +79,19 @@ export default class World {
       assets: this.assets,
     })
     this.container.add(this.room.container)
+  }
+  setMachine() {
+    this.machine = new Machine({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.machine.container)
+  }
+  setCoffee() {
+    this.coffee = new Coffee({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.coffee.container)
   }
 }

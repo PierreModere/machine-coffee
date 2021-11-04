@@ -14,9 +14,9 @@ export default class Room {
   createRoom() {
     this.room = this.assets.models.room.scene
     this.container.add(this.room)
-    console.log(this.room)
+
     this.room.scale.set(5, 5, 5)
-    this.room.children[0].children[3].children[2].position.x=0.300
+    this.room.children[0].children[4].children[3].position.x=0.300
   }
 
 }

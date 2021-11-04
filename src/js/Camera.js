@@ -8,6 +8,7 @@ export default class Camera {
     this.renderer = options.renderer
     this.debug = options.debug
     this.time = options.time
+    this.cursor = { x: 0, y: 0 }
 
     // Set up
     this.container = new Object3D()
@@ -16,7 +17,10 @@ export default class Camera {
     this.setCamera()
     this.setPosition()
     this.setMovement()
-
+    window.addEventListener('mousemove', (event) => {
+      ;(this.cursor.x = event.clientX / window.innerWidth - 0.5),
+        (this.cursor.y = event.clientY / window.innerHeight - 0.5)
+    })
     //this.setOrbitControls()
   }
   setCamera() {
@@ -41,12 +45,15 @@ export default class Camera {
     // Set camera position
     this.camera.rotateY(Math.PI * 1.5)
     this.camera.position.x = -55
-    this.camera.position.y = 14
+    this.camera.position.y = 13
     this.camera.position.z = 0
   }
   setMovement() {
     this.time.on('tick', () => {
- 
+      this.camera.position.z = -Math.sin(this.cursor.x * Math.PI) * 2
+      // this.camera.position.y =
+      //   this.container.parent.children[2].position.y +
+      //   Math.sin(this.cursor.y * Math.PI)
     })
   }
   setOrbitControls() {

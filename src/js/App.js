@@ -1,4 +1,13 @@
-import { Scene, sRGBEncoding, WebGLRenderer } from 'three'
+import {
+  Scene,
+  sRGBEncoding,
+  WebGLRenderer,
+  Raycaster,
+  Vector2,
+  BoxGeometry,
+  MeshBasicMaterial,
+  Mesh
+} from 'three'
 import { Pane } from 'tweakpane'
 import gsap, { Power3, Power4 } from 'gsap'
 
@@ -18,45 +27,104 @@ export default class App {
     this.time = new Time()
     this.sizes = new Sizes()
     this.assets = new Assets()
+    this.raycaster = new Raycaster()
+    this.pointer = new Vector2()
 
     this.setConfig()
     this.setRenderer()
     this.setCamera()
     this.setWorld()
+    this.setTarget()
+
     document.addEventListener('click', this.openDoors.bind(this))
   }
   openDoors() {
-    const trapdoor =this.world.room.room.children[0].children[3].children[2];
-    const door = this.world.room.room.children[0].children[2].rotation
-    const door2 = this.world.room.room.children[0].children[0].rotation
+    const trapdoor = this.world.room.room.children[0].children[4].children[3]
+    const machine = this.world.machine.machine
+    const door = this.world.room.room.children[0].children[3].rotation
+    const door2 = this.world.room.room.children[0].children[1].rotation
     const camera = this.camera.camera
 
     gsap.to(door, {
-      y: -Math.PI * 1.1,
+      y: (-Math.PI / 2) * 1.2,
       duration: 2.5,
-      ease: Power4.easeOut,
+      ease: Power4.easeOut
     })
     gsap
       .to(door2, {
-        y: Math.PI * 1.1,
+        y: (Math.PI / 2) * 1.2,
         duration: 2.5,
-        ease: Power4.easeOut,
+        ease: Power4.easeOut
       })
       .then(
-        gsap.to(camera.position, {
-          x: 20,
-          y:10,
-          delay: 0.5,
-          duration: 2.8,
-          ease: Power3,
+        gsap.to(machine.position, {
+          y: 5,
+          duration: 1.5,
+          ease: Power3
         }),
-        gsap.to(trapdoor.position, {
-          x: 0,
-          delay: 1.5,
-          duration: 1,
-          ease: Power3,
-        })
+        gsap
+          .to(machine.rotation, {
+            y: 0,
+            duration: 1.5,
+            ease: Power3
+          })
+          .then(
+            gsap.to(camera.position, {
+              x: 30,
+              delay: 0.7,
+              duration: 2.2,
+              ease: Power3
+            }),
+            gsap
+              .to(trapdoor.position, {
+                x: 0,
+                duration: 1.5,
+                ease: Power3
+              })
+              .then(document.addEventListener('mousemove', this.onPointerMove))
+          )
       )
+  }
+  onPointerMove = (event) => {
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+    this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+    this.raycaster.setFromCamera(this.pointer, this.camera.camera)
+    // calculate objects intersecting the picking ray var intersects =
+    const intersects = this.raycaster.intersectObject(
+      this.world.machine.machine.children[0].children[8]
+    )
+
+    if (intersects.length > 0) {
+      intersects[0].object.material.color.set(0xff0000)
+      document.querySelector('#_canvas').style.cursor = 'pointer'
+      document
+        .querySelector('#_canvas')
+        .addEventListener('click', this.firstStep)
+    } else {
+      this.world.machine.machine.children[0].children[8].material.color.set(
+        0x73ccee
+      )
+      document.querySelector('#_canvas').style.cursor = 'initial'
+      document
+        .querySelector('#_canvas')
+        .removeEventListener('click', this.firstStep,true)
+    }
+  }
+  firstStep = () => {
+    document.removeEventListener('mousemove', this.onPointerMove,true)
+    const coffee = this.world.coffee.coffee
+    coffee.visible = true
+    let tl = gsap.timeline()
+    tl.to(this.camera.camera.position, { y: 9, duration: 1 }),
+      tl.to(this.cube.position, { y: 9, duration: 1 }, 0),
+      tl.to(coffee.position, { y: -6, duration: 3 }),
+      (this.world.machine.machine.children[0].children[10].children[1].material.map =
+        this.assets.textures['text2'])
+    ;(this.world.machine.machine.children[0].children[10].children[1].material.map.flipY = false),
+      tl.to(this.camera.camera.position, { y: 13, duration: 1 }),
+      tl.to(this.cube.position, { y: 13, duration: 1 }, '<')
+
+    // tl.to(this, { cameraTargetY: 12, duration: 1 }, '-=1')
   }
   setRenderer() {
     // Set scene
@@ -66,7 +134,7 @@ export default class App {
       canvas: this.canvas,
       alpha: true,
       antialias: true,
-      powerPreference: 'high-performance',
+      powerPreference: 'high-performance'
     })
     this.renderer.outputEncoding = sRGBEncoding
     this.renderer.gammaFactor = 2.2
@@ -84,6 +152,8 @@ export default class App {
     })
     // Set RequestAnimationFrame with 60fps
     this.time.on('tick', () => {
+      this.camera.camera.lookAt(this.cube.position)
+
       // When tab is not visible (tab is not active or window is minimized), browser stops requesting animation frames. Thus, this does not work
       // if the window is only in the background without focus (for example, if you select another window without minimizing the browser one),
       // which might cause some performance or batteries issues when testing on multiple browsers
@@ -96,10 +166,10 @@ export default class App {
       this.renderOnBlur = { activated: true }
       const folder = this.debug.addFolder({
         title: 'Renderer',
-        expanded: true,
+        expanded: true
       })
       folder.addInput(this.renderOnBlur, 'activated', {
-        label: 'Render on window blur',
+        label: 'Render on window blur'
       })
     }
   }
@@ -109,17 +179,25 @@ export default class App {
       sizes: this.sizes,
       renderer: this.renderer,
       debug: this.debug,
-      time: this.time,
+      time: this.time
     })
     // Add camera to scene
     this.scene.add(this.camera.container)
+  }
+  setTarget() {
+    const geometry = new BoxGeometry(3, 3, 3)
+    const material = new MeshBasicMaterial({ color: 0x00ff00 })
+    this.cube = new Mesh(geometry, material)
+    this.cube.visible = false
+    this.cube.position.set(35, 13, 0)
+    this.scene.add(this.cube)
   }
   setWorld() {
     // Create world instance
     this.world = new World({
       time: this.time,
       debug: this.debug,
-      assets: this.assets,
+      assets: this.assets
     })
     // Add world to scene
     this.scene.add(this.world.container)

@@ -55,6 +55,7 @@
   },
   "homepage": "https://github.com/Lissandre/three_template#readme",
   "dependencies": {
-    "gsap": "^3.8.0"
+    "gsap": "^3.8.0",
+    "howler": "^2.2.3"
   }
 }

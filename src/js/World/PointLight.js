@@ -1,4 +1,4 @@
-import { Object3D, PointLight, Color } from 'three'
+import { Object3D, DirectionalLight, Color } from 'three'
 
 export default class PointLightSource {
   constructor(options) {
@@ -10,11 +10,10 @@ export default class PointLightSource {
     this.container.name = 'Point Light'
     this.params = {
       color: 0xffffff,
-      positionX: 0,
-      positionY: 2,
-      positionZ: 5,
+      positionX: 0.5,
+      positionY: 0,
+      positionZ: 0.866,
     }
-
     this.createPointLight()
 
     if (this.debug) {
@@ -22,7 +21,7 @@ export default class PointLightSource {
     }
   }
   createPointLight() {
-    this.light = new PointLight(this.params.color)
+    this.light = new DirectionalLight(this.params.color, 0.8 * Math.PI)
     this.light.castShadow = true
     this.light.position.set(
       this.params.positionX,
@@ -35,31 +34,26 @@ export default class PointLightSource {
     // Color debug
     this.debugFolder = this.debug.addFolder({
       title: 'Point Light',
-      expanded: true
+      expanded: true,
     })
-    this.debugFolder
-      .addInput(this.params, 'color')
-      .on('change', () => {
-        this.light.color = new Color(this.params.color)
-      })
+    this.debugFolder.addInput(this.params, 'color').on('change', () => {
+      this.light.color = new Color(this.params.color)
+    })
     //Position debug
-    this.debugFolder
-      .addInput(this.light.position, 'x', {
-        min: -5,
-        max: 5,
-        step: 0.1
-      })
-    this.debugFolder
-      .addInput(this.light.position, 'y', {
-        min: -5,
-        max: 5,
-        step: 0.1
-      })
-    this.debugFolder
-      .addInput(this.light.position, 'z', {
-        min: -5,
-        max: 5,
-        step: 0.1
-      })
+    this.debugFolder.addInput(this.light.position, 'x', {
+      min: -5,
+      max: 5,
+      step: 0.1,
+    })
+    this.debugFolder.addInput(this.light.position, 'y', {
+      min: -5,
+      max: 5,
+      step: 0.1,
+    })
+    this.debugFolder.addInput(this.light.position, 'z', {
+      min: -5,
+      max: 5,
+      step: 0.1,
+    })
   }
 }
