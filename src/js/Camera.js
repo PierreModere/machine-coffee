@@ -44,7 +44,7 @@ export default class Camera {
   setPosition() {
     // Set camera position
     this.camera.rotateY(Math.PI * 1.5)
-    this.camera.position.x = -55
+    this.camera.position.x = -57
     this.camera.position.y = 13
     this.camera.position.z = 0
   }

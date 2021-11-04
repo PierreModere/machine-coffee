@@ -22,8 +22,10 @@ export default class Machine {
     this.setText('text1')
   }
   setText(textNumber) {
-    this.machine.children[0].children[10].children[1].material.map =
-      this.assets.textures[textNumber]
-    this.machine.children[0].children[10].children[1].material.map.flipY = false
+    setTimeout(() => {
+      this.machine.children[0].children[10].children[1].material.map =
+        this.assets.textures[textNumber]
+      this.machine.children[0].children[10].children[1].material.map.flipY = false
+    }, 1500)
   }
 }

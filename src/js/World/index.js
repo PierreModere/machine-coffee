@@ -1,10 +1,11 @@
 import { AxesHelper, Object3D } from 'three'
-
 import AmbientLightSource from './AmbientLight'
 import PointLightSource from './PointLight'
 import Room from './Room'
 import Machine from './Machine'
 import Coffee from './Coffee'
+import Gobelet from './Gobelet'
+import Touillette from './Touillette'
 
 export default class World {
   constructor(options) {
@@ -29,10 +30,12 @@ export default class World {
   }
   init() {
     this.setAmbientLight()
-    // this.setPointLight()
+    //  this.setPointLight()
     this.setRoom()
     this.setMachine()
     this.setCoffee()
+    this.setGobelet()
+    this.setTouillette()
   }
   setLoader() {
     this.loadDiv = document.querySelector('.loadScreen')
@@ -53,10 +56,10 @@ export default class World {
       this.assets.on('ressourcesReady', () => {
         setTimeout(() => {
           this.init()
-          this.loadDiv.style.opacity = 0
+          this.loadDiv.classList.add('loadScreen-fade')
           setTimeout(() => {
             this.loadDiv.remove()
-          }, 550)
+          }, 2000)
         }, 1000)
       })
     }
@@ -93,5 +96,19 @@ export default class World {
       assets: this.assets,
     })
     this.container.add(this.coffee.container)
+  }
+  setGobelet() {
+    this.gobelet = new Gobelet({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.gobelet.container)
+  }
+  setTouillette() {
+    this.touillette = new Touillette({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.touillette.container)
   }
 }

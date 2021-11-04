@@ -29,6 +29,7 @@ export default class App {
     this.assets = new Assets()
     this.raycaster = new Raycaster()
     this.pointer = new Vector2()
+    this.step = 1
 
     this.setConfig()
     this.setRenderer()
@@ -71,7 +72,7 @@ export default class App {
           .then(
             gsap.to(camera.position, {
               x: 30,
-              delay: 0.7,
+              delay: 1,
               duration: 2.2,
               ease: Power3
             }),
@@ -107,25 +108,57 @@ export default class App {
       document.querySelector('#_canvas').style.cursor = 'initial'
       document
         .querySelector('#_canvas')
-        .removeEventListener('click', this.firstStep,true)
+        .removeEventListener('click', this.firstStep)
     }
   }
   firstStep = () => {
-    document.removeEventListener('mousemove', this.onPointerMove,true)
-    const coffee = this.world.coffee.coffee
-    coffee.visible = true
-    let tl = gsap.timeline()
-    tl.to(this.camera.camera.position, { y: 9, duration: 1 }),
-      tl.to(this.cube.position, { y: 9, duration: 1 }, 0),
-      tl.to(coffee.position, { y: -6, duration: 3 }),
-      (this.world.machine.machine.children[0].children[10].children[1].material.map =
-        this.assets.textures['text2'])
-    ;(this.world.machine.machine.children[0].children[10].children[1].material.map.flipY = false),
-      tl.to(this.camera.camera.position, { y: 13, duration: 1 }),
-      tl.to(this.cube.position, { y: 13, duration: 1 }, '<')
+    if (this.step == 1) {
+      const coffee = this.world.coffee.coffee
+      coffee.visible = true
+      let tl = gsap.timeline()
+      tl.to(this.camera.camera.position, { y: 9, duration: 1 })
+      tl.to(this.cube.position, { y: 9, duration: 1 }, 0)
+      tl.to(coffee.position, { y: -6, duration: 3 }).then(
+        this.world.machine.setText('text2')
+      )
+      tl.to(this.camera.camera.position, { y: 13, duration: 0.6 }, '-=1')
+      tl.to(this.cube.position, { y: 13, duration: 0.6 }, '<')
+      setTimeout(() => {
+        this.step = 2
+      }, 1000)
+    }
+    if (this.step == 2) {
+      this.world.gobelet.createGobelet()
+      this.world.touillette.createTouillette()
 
-    // tl.to(this, { cameraTargetY: 12, duration: 1 }, '-=1')
+      let tl = gsap.timeline()
+      tl.to(this.camera.camera.position, { y: 9, duration: 1,delay:0.5 })
+      tl.to(this.cube.position, { y: 9, duration: 1 }, '<').then(
+        this.world.machine.setText('text3'),
+        this.world.gobelet.animateGobelet(),
+        this.world.touillette.animateTouillette(),
+        tl.to(this.camera.camera.position, { y: 13, duration: 1, delay: 2.7 }),
+        tl.to(this.cube.position, { y: 13, duration: 1 }, '<')
+      )
+      tl.call(this.secondPass)
+    }
   }
+  secondPass = () => {
+    this.world.machine.setText('text4')
+    let tl = gsap.timeline()
+    tl.to(this.camera.camera.position, {
+      y: 9,
+      duration: 1,
+      delay: 3,
+      ease: Power4.easeOut
+    })
+    tl.to(
+      this.cube.position,
+      { y: 9, duration: 1, ease: Power4.easeOut },
+      '<'
+    )
+  }
+
   setRenderer() {
     // Set scene
     this.scene = new Scene()
