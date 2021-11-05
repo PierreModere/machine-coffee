@@ -46,6 +46,14 @@ export default class Loader extends EventEmitter {
           gltfLoader.load(
             model.src,
             (loaded) => {
+              loaded.scene.traverse(function (node) {
+                if (node.isMesh) {
+                  node.castShadow = true
+                  node.receiveShadow = true
+                  if (node.material.map) node.material.map.anisotropy = 16
+                }
+              })
+
               this.loadComplete(model, loaded)
             },
             (xhr) => {
@@ -113,7 +121,7 @@ export default class Loader extends EventEmitter {
     ]
   }
   progress(xhr) {
-      if (xhr.lengthComputable) {
+    if (xhr.lengthComputable) {
       this.currentPercent = Math.floor((xhr.loaded / xhr.total) * 100)
       if (this.currentPercent === 100) {
         this.currentPercent = 0
@@ -138,7 +146,11 @@ export default class Loader extends EventEmitter {
       })
     })
     // eslint-disable-next-line
-    const texturesContext = require.context('@textures', true, /\.(png|jpeg|jpg)$/)
+    const texturesContext = require.context(
+      '@textures',
+      true,
+      /\.(png|jpeg|jpg)$/
+    )
     texturesContext.keys().forEach((key) => {
       const newKey = `${key}`.substring(2)
       // eslint-disable-next-line

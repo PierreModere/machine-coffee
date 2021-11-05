@@ -6,6 +6,7 @@ import Machine from './Machine'
 import Coffee from './Coffee'
 import Gobelet from './Gobelet'
 import Touillette from './Touillette'
+import AllTouillettes from './allTouillettes'
 
 export default class World {
   constructor(options) {
@@ -30,12 +31,13 @@ export default class World {
   }
   init() {
     this.setAmbientLight()
-    //  this.setPointLight()
+    this.setPointLight()
     this.setRoom()
     this.setMachine()
     this.setCoffee()
     this.setGobelet()
     this.setTouillette()
+    this.setAllTouillettes()
   }
   setLoader() {
     this.loadDiv = document.querySelector('.loadScreen')
@@ -110,5 +112,12 @@ export default class World {
       assets: this.assets,
     })
     this.container.add(this.touillette.container)
+  }
+  setAllTouillettes() {
+    this.allTouillettes = new AllTouillettes({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.allTouillettes.container)
   }
 }

@@ -45,46 +45,33 @@ export default class App {
     const door = this.world.room.room.children[0].children[3].rotation
     const door2 = this.world.room.room.children[0].children[1].rotation
     const camera = this.camera.camera
-
-    gsap.to(door, {
+    let tl = gsap.timeline()
+    tl.to(door, {
       y: (-Math.PI / 2) * 1.2,
       duration: 2.5,
       ease: Power4.easeOut
     })
-    gsap
-      .to(door2, {
-        y: (Math.PI / 2) * 1.2,
-        duration: 2.5,
-        ease: Power4.easeOut
-      })
-      .then(
-        gsap.to(machine.position, {
-          y: 5,
-          duration: 1.5,
-          ease: Power3
-        }),
-        gsap
-          .to(machine.rotation, {
-            y: 0,
-            duration: 1.5,
-            ease: Power3
-          })
-          .then(
-            gsap.to(camera.position, {
-              x: 30,
-              delay: 1,
-              duration: 2.2,
-              ease: Power3
-            }),
-            gsap
-              .to(trapdoor.position, {
-                x: 0,
-                duration: 1.5,
-                ease: Power3
-              })
-              .then(document.addEventListener('mousemove', this.onPointerMove))
-          )
-      )
+    tl.to(
+      door2,
+      { y: (Math.PI / 2) * 1.2, duration: 2.5, ease: Power4.easeOut },
+      '<'
+    )
+    tl.to(
+      machine.position,
+      { y: 0.4, duration: 1.9, delay: 0.5, ease: Power3 },
+      '<'
+    )
+    tl.to(machine.rotation, { y: 0, duration: 1.9, ease: Power3 }, '<')
+    tl.to(
+      camera.position,
+      { x: 29, duration: 2.2, delay: 1, ease: Power3 },
+      '<'
+    )
+    tl.to(
+      trapdoor.position,
+      { x: 0, duration: 1.5, ease: Power3 },
+      '<'
+    ).then(document.addEventListener('mousemove', this.onPointerMove))
   }
   onPointerMove = (event) => {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -92,7 +79,7 @@ export default class App {
     this.raycaster.setFromCamera(this.pointer, this.camera.camera)
     // calculate objects intersecting the picking ray var intersects =
     const intersects = this.raycaster.intersectObject(
-      this.world.machine.machine.children[0].children[8]
+      this.world.machine.machine.children[0].children[9]
     )
 
     if (intersects.length > 0) {
@@ -102,7 +89,7 @@ export default class App {
         .querySelector('#_canvas')
         .addEventListener('click', this.firstStep)
     } else {
-      this.world.machine.machine.children[0].children[8].material.color.set(
+      this.world.machine.machine.children[0].children[9].material.color.set(
         0x73ccee
       )
       document.querySelector('#_canvas').style.cursor = 'initial'
@@ -132,7 +119,7 @@ export default class App {
       this.world.touillette.createTouillette()
 
       let tl = gsap.timeline()
-      tl.to(this.camera.camera.position, { y: 9, duration: 1,delay:0.5 })
+      tl.to(this.camera.camera.position, { y: 9, duration: 1, delay: 0.5 })
       tl.to(this.cube.position, { y: 9, duration: 1 }, '<').then(
         this.world.machine.setText('text3'),
         this.world.gobelet.animateGobelet(),
@@ -145,18 +132,17 @@ export default class App {
   }
   secondPass = () => {
     this.world.machine.setText('text4')
-    let tl = gsap.timeline()
+    let tl = gsap.timeline({
+      onComplete: this.world.allTouillettes.createTouillettes()
+    })
+
     tl.to(this.camera.camera.position, {
       y: 9,
       duration: 1,
       delay: 3,
-      ease: Power4.easeOut
+      ease: Power4
     })
-    tl.to(
-      this.cube.position,
-      { y: 9, duration: 1, ease: Power4.easeOut },
-      '<'
-    )
+    tl.to(this.cube.position, { y: 9, duration: 1, ease: Power4 }, '<')
   }
 
   setRenderer() {
@@ -172,10 +158,11 @@ export default class App {
     this.renderer.outputEncoding = sRGBEncoding
     this.renderer.gammaFactor = 2.2
     // Set background color
-    this.renderer.setClearColor(0x212121, 1)
+    this.renderer.setClearColor(0xffffff, 1)
     // Set renderer pixel ratio & sizes
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)
+    this.renderer.shadowMap.enabled = true
     // Resize renderer on resize event
     this.sizes.on('resize', () => {
       this.renderer.setSize(

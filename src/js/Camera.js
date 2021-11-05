@@ -26,7 +26,7 @@ export default class Camera {
   setCamera() {
     // Create camera
     this.camera = new PerspectiveCamera(
-      70,
+      60,
       this.sizes.viewport.width / this.sizes.viewport.height,
       0.1,
       1000
@@ -44,7 +44,7 @@ export default class Camera {
   setPosition() {
     // Set camera position
     this.camera.rotateY(Math.PI * 1.5)
-    this.camera.position.x = -57
+    this.camera.position.x = -58
     this.camera.position.y = 13
     this.camera.position.z = 0
   }
