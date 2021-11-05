@@ -6,7 +6,8 @@ import {
   Vector2,
   BoxGeometry,
   MeshBasicMaterial,
-  Mesh
+  Mesh,
+  Group
 } from 'three'
 import { Pane } from 'tweakpane'
 import gsap, { Power3, Power4 } from 'gsap'
@@ -67,11 +68,9 @@ export default class App {
       { x: 29, duration: 2.2, delay: 1, ease: Power3 },
       '<'
     )
-    tl.to(
-      trapdoor.position,
-      { x: 0, duration: 1.5, ease: Power3 },
-      '<'
-    ).then(document.addEventListener('mousemove', this.onPointerMove))
+    tl.to(trapdoor.position, { x: 0, duration: 1.5, ease: Power3 }, '<').then(
+      document.addEventListener('mousemove', this.onPointerMove)
+    )
   }
   onPointerMove = (event) => {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -108,7 +107,7 @@ export default class App {
       tl.to(coffee.position, { y: -6, duration: 3 }).then(
         this.world.machine.setText('text2')
       )
-      tl.to(this.camera.camera.position, { y: 13, duration: 0.6 }, '-=1')
+      tl.to(this.camera.camera.position, { y: 13, duration: 0.6 })
       tl.to(this.cube.position, { y: 13, duration: 0.6 }, '<')
       setTimeout(() => {
         this.step = 2
@@ -133,7 +132,7 @@ export default class App {
   secondPass = () => {
     this.world.machine.setText('text4')
     let tl = gsap.timeline({
-      onComplete: this.world.allTouillettes.createTouillettes()
+      onComplete: this.thirdPass()
     })
 
     tl.to(this.camera.camera.position, {
@@ -143,6 +142,71 @@ export default class App {
       ease: Power4
     })
     tl.to(this.cube.position, { y: 9, duration: 1, ease: Power4 }, '<')
+  }
+
+  thirdPass() {
+    this.world.allTouillettes.createTouillettes()
+    const gobGroup = new Group()
+    gobGroup.add(this.world.allTouillettes.allTouillettes)
+    gobGroup.add(this.world.touillette.touillette)
+    gobGroup.add(this.world.gobelet.gobelet)
+    this.world.container.add(gobGroup)
+    let tl = gsap.timeline()
+    tl.to(gobGroup.position, {
+      x: -4.2,
+      y: -0.7,
+      z: 1,
+      duration: 0.9,
+      delay: 4.9,
+      ease: Power4.easeOut
+    }).then(
+      setTimeout(() => {
+        this.world.machine.setText('text5'),
+          this.camera.camera.attach(gobGroup),
+          this.forthPass()
+      }, 6000)
+    )
+
+    // this.camera.camera.attach(gobGroup)
+  }
+
+  forthPass() {
+    const door = this.world.room.room.children[0].children[3].rotation
+    const door2 = this.world.room.room.children[0].children[1].rotation
+    let tl = gsap.timeline()
+    tl.to(this.camera.camera.position, {
+      y: 13,
+      duration: 1,
+      ease: Power4
+    })
+    tl.to(this.cube.position, { y: 13, duration: 1, ease: Power4 }, '<')
+    tl.to(this.camera.camera.position, {
+      x: -90,
+      duration: 2,
+      delay: 2,
+      ease: Power4.easeOut
+    })
+    tl.to(
+      document.querySelector('#_canvas'),
+      {
+        opacity: 0,
+        duration: 2,
+        delay: 0.4,
+        ease: Power4.easeOut
+      },
+      '<'
+    )
+    tl.to(
+      door,
+      {
+        y: 0,
+        duration: 2,
+        delay: 0.2,
+        ease: Power4.easeOut
+      },
+      '<'
+    )
+    tl.to(door2, { y: 0, duration: 2, ease: Power4.easeOut }, '<')
   }
 
   setRenderer() {
@@ -158,7 +222,7 @@ export default class App {
     this.renderer.outputEncoding = sRGBEncoding
     this.renderer.gammaFactor = 2.2
     // Set background color
-    this.renderer.setClearColor(0xffffff, 1)
+    this.renderer.setClearColor(0x000000, 1)
     // Set renderer pixel ratio & sizes
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setSize(this.sizes.viewport.width, this.sizes.viewport.height)

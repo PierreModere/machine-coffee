@@ -1,4 +1,6 @@
 import { AxesHelper, Object3D } from 'three'
+import { Howl, Howler } from 'howler'
+
 import AmbientLightSource from './AmbientLight'
 import PointLightSource from './PointLight'
 import Room from './Room'
@@ -31,13 +33,14 @@ export default class World {
   }
   init() {
     this.setAmbientLight()
-    this.setPointLight()
+    // this.setPointLight()
     this.setRoom()
     this.setMachine()
     this.setCoffee()
     this.setGobelet()
     this.setTouillette()
     this.setAllTouillettes()
+    this.setAudio()
   }
   setLoader() {
     this.loadDiv = document.querySelector('.loadScreen')
@@ -65,6 +68,15 @@ export default class World {
         }, 1000)
       })
     }
+  }
+  setAudio() {
+    this.ambiance = new Howl({
+      src: [this.assets.sounds.sound],
+    })
+  }
+
+  playAudio() {
+    this.ambiance.play()
   }
   setAmbientLight() {
     this.ambientlight = new AmbientLightSource({

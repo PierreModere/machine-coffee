@@ -23,7 +23,7 @@ export default class Gobelet {
   animateGobelet() {
     let tl = gsap.timeline()
     tl.to(this.gobelet.position, { y: 5, duration: 0.3, delay: 1.4 })
-    tl.to(this.gobelet.position, { y: 5.1, duration: 0.1 })
+    tl.to(this.gobelet.position, { y: 5.08, duration: 0.1 })
     tl.to(this.gobelet.position, { y: 5, duration: 0.05 })
   }
 }
