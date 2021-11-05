@@ -4,7 +4,7 @@ import {
   DirectionalLightHelper,
   Color,
 } from 'three'
-
+import gsap from 'gsap'
 export default class PointLightSource {
   constructor(options) {
     // Set options
@@ -25,9 +25,15 @@ export default class PointLightSource {
       this.setDebug()
     }
   }
+  upLight() {
+    gsap.to(this.light, { intensity: 1, duration: 5 })
+  }
+  downLight() {
+    gsap.to(this.light, { intensity: -0.1, duration: 1 })
+  }
   createPointLight() {
-    this.light = new DirectionalLight(0xffffff,0.8)
-    this.light.position.set(-20.0, 20, 0)
+    this.light = new DirectionalLight(0xffffff, 0.2)
+    this.light.position.set(-50, 25, 0)
     this.light.castShadow = true
     this.light.shadow.radius = 2
     this.light.shadow.mapSize.width = 1024

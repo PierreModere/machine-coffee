@@ -30,7 +30,7 @@ export default class App {
     this.assets = new Assets()
     this.raycaster = new Raycaster()
     this.pointer = new Vector2()
-    this.step = 1
+    this.step = 0
 
     this.setConfig()
     this.setRenderer()
@@ -38,39 +38,49 @@ export default class App {
     this.setWorld()
     this.setTarget()
 
-    document.addEventListener('click', this.openDoors.bind(this))
+    document
+      .querySelector('#_canvas')
+      .addEventListener('click', this.openDoors.bind(this))
   }
   openDoors() {
-    const trapdoor = this.world.room.room.children[0].children[4].children[3]
-    const machine = this.world.machine.machine
-    const door = this.world.room.room.children[0].children[3].rotation
-    const door2 = this.world.room.room.children[0].children[1].rotation
-    const camera = this.camera.camera
-    let tl = gsap.timeline()
-    tl.to(door, {
-      y: (-Math.PI / 2) * 1.2,
-      duration: 2.5,
-      ease: Power4.easeOut
-    })
-    tl.to(
-      door2,
-      { y: (Math.PI / 2) * 1.2, duration: 2.5, ease: Power4.easeOut },
-      '<'
-    )
-    tl.to(
-      machine.position,
-      { y: 0.4, duration: 1.9, delay: 0.5, ease: Power3 },
-      '<'
-    )
-    tl.to(machine.rotation, { y: 0, duration: 1.9, ease: Power3 }, '<')
-    tl.to(
-      camera.position,
-      { x: 29, duration: 2.2, delay: 1, ease: Power3 },
-      '<'
-    )
-    tl.to(trapdoor.position, { x: 0, duration: 1.5, ease: Power3 }, '<').then(
-      document.addEventListener('mousemove', this.onPointerMove)
-    )
+    if (this.step == 0) {
+      this.world.lowVolume()
+      this.world.light.upLight()
+      const trapdoor = this.world.room.room.children[0].children[4].children[3]
+      const machine = this.world.machine.machine
+      const door = this.world.room.room.children[0].children[3].rotation
+      const door2 = this.world.room.room.children[0].children[1].rotation
+      const camera = this.camera.camera
+      let tl = gsap.timeline()
+      tl.to(door, {
+        y: (-Math.PI / 2) * 1.2,
+        duration: 2.5,
+        ease: Power4.easeOut
+      })
+      tl.to(
+        door2,
+        { y: (Math.PI / 2) * 1.2, duration: 2.5, ease: Power4.easeOut },
+        '<'
+      )
+      tl.to(
+        machine.position,
+        { y: 0.4, duration: 1.9, delay: 0.5, ease: Power3 },
+        '<'
+      )
+      tl.to(machine.rotation, { y: 0, duration: 1.9, ease: Power3 }, '<')
+      tl.to(
+        camera.position,
+        { x: 29, duration: 2.2, delay: 1, ease: Power3 },
+        '<'
+      )
+      tl.to(trapdoor.position, { x: 0, duration: 1.5, ease: Power3 }, '<').then(
+        document.addEventListener('mousemove', this.onPointerMove)
+      )
+      this.step = 1
+      document
+        .querySelector('#_canvas')
+        .removeEventListener('click', this.openDoors)
+    }
   }
   onPointerMove = (event) => {
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -160,6 +170,7 @@ export default class App {
       delay: 4.9,
       ease: Power4.easeOut
     }).then(
+      this.world.allGobelets.createGobelets(),
       setTimeout(() => {
         this.world.machine.setText('text5'),
           this.camera.camera.attach(gobGroup),
@@ -181,32 +192,36 @@ export default class App {
     })
     tl.to(this.cube.position, { y: 13, duration: 1, ease: Power4 }, '<')
     tl.to(this.camera.camera.position, {
-      x: -90,
-      duration: 2,
+      x: -210,
+      y: 5,
+      duration: 3,
       delay: 2,
-      ease: Power4.easeOut
+      ease: Power4
     })
-    tl.to(
-      document.querySelector('#_canvas'),
-      {
-        opacity: 0,
-        duration: 2,
-        delay: 0.4,
-        ease: Power4.easeOut
-      },
-      '<'
-    )
+
     tl.to(
       door,
       {
         y: 0,
         duration: 2,
-        delay: 0.2,
+        delay: 0.5,
         ease: Power4.easeOut
       },
       '<'
     )
-    tl.to(door2, { y: 0, duration: 2, ease: Power4.easeOut }, '<')
+    tl.to(door2, { y: 0, duration: 2, ease: Power4.easeOut }, '<').then(
+      this.world.light.downLight()
+    )
+    tl.to(
+      document.querySelector('#_canvas'),
+      {
+        opacity: 0,
+        duration: 2,
+        delay: 3,
+        ease: Power4.easeOut
+      },
+      '<'
+    )
   }
 
   setRenderer() {

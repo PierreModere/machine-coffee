@@ -1,5 +1,6 @@
 import { AxesHelper, Object3D } from 'three'
 import { Howl, Howler } from 'howler'
+import gsap, { Power4 } from 'gsap'
 
 import AmbientLightSource from './AmbientLight'
 import PointLightSource from './PointLight'
@@ -9,6 +10,7 @@ import Coffee from './Coffee'
 import Gobelet from './Gobelet'
 import Touillette from './Touillette'
 import AllTouillettes from './allTouillettes'
+import AllGobelets from './allGobelets'
 
 export default class World {
   constructor(options) {
@@ -33,16 +35,19 @@ export default class World {
   }
   init() {
     this.setAmbientLight()
-    // this.setPointLight()
+    this.setPointLight()
     this.setRoom()
     this.setMachine()
     this.setCoffee()
     this.setGobelet()
     this.setTouillette()
     this.setAllTouillettes()
+    this.setAllGobelets()
+
     this.setAudio()
   }
   setLoader() {
+    this.waitDiv = document.querySelector('.waitScreen')
     this.loadDiv = document.querySelector('.loadScreen')
     this.loadModels = this.loadDiv.querySelector('.load')
     this.progress = this.loadDiv.querySelector('.progress')
@@ -62,6 +67,15 @@ export default class World {
         setTimeout(() => {
           this.init()
           this.loadDiv.classList.add('loadScreen-fade')
+          this.waitDiv
+            .querySelector('.wait-text')
+            .addEventListener('click', () => {
+              this.waitDiv.classList.add('waitScreen-fade')
+              this.playAudio()
+              setTimeout(() => {
+                this.waitDiv.remove()
+              }, 2000)
+            })
           setTimeout(() => {
             this.loadDiv.remove()
           }, 2000)
@@ -71,12 +85,19 @@ export default class World {
   }
   setAudio() {
     this.ambiance = new Howl({
-      src: [this.assets.sounds.sound],
+      src: 'sound.mp3',
     })
   }
-
   playAudio() {
     this.ambiance.play()
+  }
+  lowVolume() {
+    gsap.to(this.ambiance, {
+      volume: 0.05,
+      duration: 2.5,
+      delay: 1.2,
+      ease: Power4,
+    })
   }
   setAmbientLight() {
     this.ambientlight = new AmbientLightSource({
@@ -131,5 +152,12 @@ export default class World {
       assets: this.assets,
     })
     this.container.add(this.allTouillettes.container)
+  }
+  setAllGobelets() {
+    this.allGobelets = new AllGobelets({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.allGobelets.container)
   }
 }
