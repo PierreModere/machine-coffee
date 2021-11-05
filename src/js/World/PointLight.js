@@ -46,13 +46,6 @@ export default class PointLightSource {
     this.light.shadow.camera.near = 25
     this.light.shadow.camera.far = 250
     this.light.shadow.bias = -0.005
-    // this.light.position.set(
-    //   this.params.positionX,
-    //   this.params.positionY,
-    //   this.params.positionZ
-    // )
-    this.lightHelper = new DirectionalLightHelper(this.light)
-    this.container.add(this.lightHelper)
 
     this.container.add(this.light)
   }
