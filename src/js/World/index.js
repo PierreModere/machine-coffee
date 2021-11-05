@@ -11,6 +11,7 @@ import Gobelet from './Gobelet'
 import Touillette from './Touillette'
 import AllTouillettes from './allTouillettes'
 import AllGobelets from './allGobelets'
+import Desk from './Desk'
 
 export default class World {
   constructor(options) {
@@ -43,6 +44,7 @@ export default class World {
     this.setTouillette()
     this.setAllTouillettes()
     this.setAllGobelets()
+    this.setDesk()
 
     this.setAudio()
   }
@@ -87,6 +89,22 @@ export default class World {
     this.ambiance = new Howl({
       src: 'sound.mp3',
     })
+    this.music = new Howl({
+      src: 'music.mp3',
+      volume: 0,
+    })
+    this.coffeeSound = new Howl({
+      src: 'coffee.mp3',
+      volume: 0.7,
+    })
+
+    this.bip = new Howl({
+      src: 'bip.mp3',
+      volume: 0.3,
+    })
+  }
+  playBip() {
+    this.bip.play()
   }
   playAudio() {
     this.ambiance.play()
@@ -94,10 +112,37 @@ export default class World {
   lowVolume() {
     gsap.to(this.ambiance, {
       volume: 0.05,
-      duration: 2.5,
-      delay: 1.2,
+      duration: 7,
       ease: Power4,
     })
+    this.music.play()
+    gsap.to(this.music, {
+      volume: 0.05,
+      duration: 5,
+      delay: 1,
+      ease: Power4,
+    })
+  }
+  lowMusic() {
+    gsap.to(this.ambiance, {
+      volume: 0,
+      duration: 2,
+    })
+    this.ambiance.stop()
+
+    gsap
+      .to(this.music, {
+        volume: 0,
+        duration: 5,
+        delay: 6,
+      })
+      .then(() => {
+        this.music.stop()
+      })
+  }
+
+  playCoffeeSound() {
+    this.coffeeSound.play()
   }
   setAmbientLight() {
     this.ambientlight = new AmbientLightSource({
@@ -159,5 +204,12 @@ export default class World {
       assets: this.assets,
     })
     this.container.add(this.allGobelets.container)
+  }
+  setDesk() {
+    this.desk = new Desk({
+      time: this.time,
+      assets: this.assets,
+    })
+    this.container.add(this.desk.container)
   }
 }

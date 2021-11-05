@@ -109,6 +109,7 @@ export default class App {
   }
   firstStep = () => {
     if (this.step == 1) {
+      this.world.playCoffeeSound()
       const coffee = this.world.coffee.coffee
       coffee.visible = true
       let tl = gsap.timeline()
@@ -173,6 +174,9 @@ export default class App {
       this.world.allGobelets.createGobelets(),
       setTimeout(() => {
         this.world.machine.setText('text5'),
+          setTimeout(() => {
+            this.world.playBip()
+          }, 1200)
           this.camera.camera.attach(gobGroup),
           this.forthPass()
       }, 6000)
@@ -195,8 +199,7 @@ export default class App {
       x: -210,
       y: 5,
       duration: 3,
-      delay: 2,
-      ease: Power4
+      delay: 2
     })
 
     tl.to(
@@ -210,7 +213,19 @@ export default class App {
       '<'
     )
     tl.to(door2, { y: 0, duration: 2, ease: Power4.easeOut }, '<').then(
-      this.world.light.downLight()
+      this.world.light.downLight(),
+      this.world.lowMusic()
+    )
+    tl.to(
+      this.cube.position,
+      {
+        x: -300,
+        z: 0,
+        y: 5,
+        duration: 2.4,
+        ease: Power4.easeOut
+      },
+      '-=1'
     )
     tl.to(
       document.querySelector('#_canvas'),
